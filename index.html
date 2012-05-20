@@ -1,0 +1,240 @@
+<!doctype html>
+<html lang="en">
+	<head>
+		<title>RubiksCube-在线魔方 by hpf1908</title>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+		<style>
+			body {
+				font-family: Monospace;
+				background-color: #f0f0f0;
+				margin: 0px;
+				overflow: hidden;
+			}
+		</style>
+		<script language="javascript" src="./js/jquery-1.7.2.min.js"></script>
+		<script language="javascript" src="./js/Three.js"></script>
+		<script language="javascript" src="./js/rubiksCube.js"></script>
+		<script language="javascript" src="./fonts/helvetiker_regular.typeface.js"></script>
+	</head>
+	<body>
+
+		<div style="display:none;">
+			<a id="x" href="#">x</a>
+			<a id="y" href="#">y</a>
+			<a id="z" href="#">z</a>
+			<a id="replay" href="#">replay</a>
+			<a id="crash" href="#">crash</a>
+		</div>
+
+		<script>
+			var container, stats;
+
+			var camera, scene, renderer;
+
+			var rubiksCube , cmds;
+
+			var windowHalfX = window.innerWidth / 2;
+			var windowHalfY = window.innerHeight / 2;
+
+
+			function createParticle(x , y , z){
+				var particle = new THREE.Particle();
+				particle.position.x = x;
+				particle.position.y = y;
+				particle.position.z = z;
+				particle.position.normalize();
+				particle.position.multiplyScalar( Math.random() * 10 + 450 );
+				//particle.scale.x = particle.scale.y = 5;
+				return particle;
+			}
+
+			function addDimensonLine(from , to , color , scene){
+
+				var geometry = new THREE.Geometry();
+				
+				var fromParticle = createParticle(from.x, from.y, from.z);
+				var toParticle = createParticle(to.x, to.y, to.z);
+
+				scene.add( fromParticle );
+				scene.add( toParticle );
+
+				geometry.vertices.push( fromParticle.position );
+				geometry.vertices.push( toParticle.position );
+				
+				//蓝
+				var line = new THREE.Line( geometry, new THREE.LineBasicMaterial( { color: color, opacity: 1.0 } ) );
+				scene.add( line );
+			}
+
+			function addText(text , pos , color , scene){		
+
+				var text3d = new THREE.TextGeometry(text, {
+					size: 80,
+					height: 20,
+					curveSegments: 2,
+					font: "helvetiker"
+				});
+
+				text3d.computeBoundingBox();
+
+				var textMaterial = new THREE.MeshBasicMaterial( { color: Math.random() * color, overdraw: true } );
+				var text = new THREE.Mesh( text3d, textMaterial );
+
+				text.doubleSided = false;
+
+				text.position.x = pos.x;
+				text.position.y = pos.y;
+				text.position.z = pos.z;
+
+				text.rotation.x = 0;
+				text.rotation.y = Math.PI * 2;
+
+				var parent = new THREE.Object3D();
+				parent.add( text );
+
+				scene.add( parent );
+			}
+
+			
+			function addDimensonLocations(scene){
+				
+				var max = 9999;
+				//红
+				addDimensonLine({x:max,y:0,z:0},{x:-max,y:0,z:0},0xFF0033,scene);
+				addText('x+',{x:200,y:0,z:0},0xFF0033,scene);
+				//绿
+				addDimensonLine({x:0,y:max,z:0},{x:0,y:-max,z:0},0x00CC33,scene);
+				addText('y+',{x:0,y:200,z:0},0x00CC33,scene);
+				//蓝
+				addDimensonLine({x:0,y:0,z:max},{x:0,y:0,z:-max},0x000CC,scene);
+				addText('z+',{x:0,y:0,z:200},0x000CC,scene);
+			}
+
+			function init() {
+
+				container = document.createElement( 'div' );
+				document.body.appendChild( container );
+
+				scene = new THREE.Scene();
+		
+				camera = new THREE.PerspectiveCamera( 70, window.innerWidth / window.innerHeight, 1, 1000 );
+
+				camera.position.y = 250;
+				camera.position.z = 0;
+				scene.add( camera );
+
+				//创建魔方
+				rubiksCube = new THREE.RubiksCubeObject(3);
+				rubiksCube.addToScene(scene);
+
+				//添加坐标轴
+				addDimensonLocations(scene);
+				
+				renderer = new THREE.CanvasRenderer();
+				renderer.setSize( window.innerWidth, window.innerHeight );
+				container.appendChild( renderer.domElement );
+			
+				camera.lookAt( scene.position );
+			}
+
+
+			function animate() {
+
+				requestAnimationFrame( animate );
+				render();
+			}
+			
+			function render() {
+				
+
+				var timer = Date.now() * 0.0001;
+				camera.position.x = Math.cos( timer ) * 500;
+				camera.position.z = Math.sin( timer ) * 500;
+				
+	
+				camera.lookAt( scene.position );
+				renderer.render( scene, camera );
+			}
+			
+			var generateCmds = function(num){
+				var cmds = [];
+				var dimensions = ['X','Y','Z'];
+
+				for(var i=0;i<num;i++) {
+					var dimension = dimensions[Math.floor(Math.random() * 3)];
+					var direction = Math.floor(Math.random() * 2) == 0 ? 1 : -1;
+					var cmd = {
+						dimension : dimension , 
+						direction : direction,
+						side :Math.floor(Math.random() * 3)
+					}
+					cmds.push(cmd);
+				}
+				return cmds;
+			}
+
+			var excuteCmds = function(cmds){
+				for(var i=0,len=cmds.length;i<len;i++) {
+					var cmd =cmds[i];
+					rubiksCube['rotate'+cmd.dimension](cmd.direction , cmd.side , false);
+				}
+			}
+
+			var reverseCmd = function(cmd){
+				rubiksCube['rotate'+cmd.dimension](-cmd.direction , cmd.side);	
+			}
+
+			var Player = {
+				replay : function(cmds , time , callback){
+					this.step = cmds.length - 1;	
+					this._replayCmd(cmds , time , callback);	
+				},
+				_replayCmd : function(cmds , time, callback){
+					var self = this;
+					if(this.step<0) {
+						callback && callback();
+					} else {
+						setTimeout(function(){
+							reverseCmd(cmds[self.step--]);
+							self._replayCmd(cmds , time, callback);
+						},time || 3000);
+					}		
+				}
+			}
+
+			$('#y').onclick = function(){
+				rubiksCube.rotateY(1 , 0 );
+			};
+
+			$('#x').onclick = function(){
+				rubiksCube.rotateX(1 , 0);
+			};
+
+			$('#z').onclick = function(){
+				rubiksCube.rotateZ(1 , 0);
+			};
+
+			$('#replay').click(function(){
+				Player.replay(cmds , 1000);
+			});
+
+			$('#crash').click(function(){
+				cmds = generateCmds(15);
+				excuteCmds(cmds);
+			});
+
+			init();
+			animate();
+			
+			cmds = generateCmds(15);
+			excuteCmds(cmds);
+			
+			setTimeout(function(){
+				$('#replay').trigger('click');
+			});
+
+		</script>
+
+	</body>
+</html>
