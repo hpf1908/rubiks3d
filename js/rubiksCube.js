@@ -1,18 +1,18 @@
 /**
  * @date 20120519
  * @author flyhuang
- * @desc »ùÓÚthreejs ÊµÏÖµÄÄ§·½object
+ * @desc åŸºäºthreejs å®ç°çš„é­”æ–¹object
  */
 (function(w){
 
-	//Ä§·½ÁùÃæµÄÑÕÉ«
-	//ÆÕÍ¨Çé¿öÏÂ£ººì¶Ô³È »Æ¶Ô°×  ÂÌ¶ÔÀ¶
-	//ºì 0xFF0033
-	//À¶ 0x000CC
-	//³È 0xFF6600
-	//»Æ 0xFFFF33
-	//ÂÌ 0x00CC33
-	//°× 0xFFFFFF
+	//é­”æ–¹å…­é¢çš„é¢œè‰²
+	//æ™®é€šæƒ…å†µä¸‹ï¼šçº¢å¯¹æ©™ é»„å¯¹ç™½  ç»¿å¯¹è“
+	//çº¢ 0xFF0033
+	//è“ 0x000CC
+	//æ©™ 0xFF6600
+	//é»„ 0xFFFF33
+	//ç»¿ 0x00CC33
+	//ç™½ 0xFFFFFF
 	var cubicColors = {
 		'x+' : 0xFF0033,
 		'x-' : 0xFF6600,
@@ -174,17 +174,17 @@
 
 	
 	/**
-	 * @param level Ä§·½µÄ½×Êı
-     * @param size  Ä§·½Ã¿¸öĞ¡¿éµÄ´óĞ¡
-	 * @param options Ä§·½µÄÉèÖÃ²ÎÊı 
-	 * @todo Ö§³ÖÄ§·½Ö¸¶¨ÈÎÒâÎ»ÖÃ
+	 * @param level é­”æ–¹çš„é˜¶æ•°
+     * @param size  é­”æ–¹æ¯ä¸ªå°å—çš„å¤§å°
+	 * @param options é­”æ–¹çš„è®¾ç½®å‚æ•° 
+	 * @todo æ”¯æŒé­”æ–¹æŒ‡å®šä»»æ„ä½ç½®
 	 */
 	w.RubiksCubeObject = function(level , size , options){
 		
 		this.level = level || 3;
 		this.size = size || 50;
 
-		//ÈıÎ¬Êı×é
+		//ä¸‰ç»´æ•°ç»„
 		this.cubes = [];
 
 		this.opts = options || {};
@@ -401,11 +401,11 @@
 	}
 
 	/**
-	 * ½«Ä§·½Ä³Ò»¸öÖáµÄÆäÖĞÒ»ÃæÈÆ¸ÃÖáĞı×ª
-	 * @param dimension ·½ÏòÖá : x , y ,z
-	 * @param direction ÄæÊ±Õë»òÕßË³Ê±Õë£º1 -1 
-	 * @param index ÑØ×Å¸ÃÖáÄ³Ò»ÃæµÄÏÂ±ê £¬·ÇÊı×Ö¼´±íÊ¾Ğı×ªÕû¸öÃæ
-	 * @param animate Ğı×ªÊ±ÊÇ·ñÊ¹ÓÃ¶¯»­
+	 * å°†é­”æ–¹æŸä¸€ä¸ªè½´çš„å…¶ä¸­ä¸€é¢ç»•è¯¥è½´æ—‹è½¬
+	 * @param dimension æ–¹å‘è½´ : x , y ,z
+	 * @param direction é€†æ—¶é’ˆæˆ–è€…é¡ºæ—¶é’ˆï¼š1 -1 
+	 * @param index æ²¿ç€è¯¥è½´æŸä¸€é¢çš„ä¸‹æ ‡ ï¼Œéæ•°å­—å³è¡¨ç¤ºæ—‹è½¬æ•´ä¸ªé¢
+	 * @param animate æ—‹è½¬æ—¶æ˜¯å¦ä½¿ç”¨åŠ¨ç”»
 	 */
 	w.RubiksCubeObject.prototype.rotate = function(dimension  , direction , index , animate){
 		if(dimension == 'x') {
