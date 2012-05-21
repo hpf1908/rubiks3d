@@ -140,8 +140,8 @@
 
 
 			function animate() {
-
 				requestAnimationFrame( animate );
+				//setTimeout(animate,25);
 				render();
 			}
 			
@@ -181,8 +181,8 @@
 				}
 			}
 
-			var reverseCmd = function(cmd){
-				rubiksCube['rotate'+cmd.dimension](-cmd.direction , cmd.side);	
+			var reverseCmd = function(cmd , callback){
+				rubiksCube['rotate'+cmd.dimension](-cmd.direction , cmd.side , true , callback);	
 			}
 
 			var Player = {
@@ -196,8 +196,9 @@
 						callback && callback();
 					} else {
 						setTimeout(function(){
-							reverseCmd(cmds[self.step--]);
-							self._replayCmd(cmds , time, callback);
+							reverseCmd(cmds[self.step--] , function(){
+								self._replayCmd(cmds , time, callback);
+							});
 						},time || 3000);
 					}		
 				}

@@ -317,7 +317,7 @@
 		this.cubes[i] = newCube;
 	}
 
-	w.RubiksCubeObject.prototype._rotateRubiks = function(dimension , direction , index , animate){
+	w.RubiksCubeObject.prototype._rotateRubiks = function(dimension , direction , index , animate , callback){
 		animate = typeof(animate) != 'undefined' ? animate : true;
 		
 		var cubes = this.cubes;
@@ -383,21 +383,22 @@
 				},
 			}).start(function(){
 				self._rotateRubiks(dimension , direction , index , false);
+				callback && callback();
 			});
 		}
 	}
 
 
-	w.RubiksCubeObject.prototype.rotateX = function(direction , index , animate){
-		this._rotateRubiks('x' , direction , index , animate);
+	w.RubiksCubeObject.prototype.rotateX = function(direction , index , animate , callback){
+		this._rotateRubiks('x' , direction , index , animate , callback);
 	}
 
-	w.RubiksCubeObject.prototype.rotateY = function(direction , index , animate){
-		this._rotateRubiks('y' , direction , index , animate);
+	w.RubiksCubeObject.prototype.rotateY = function(direction , index , animate , callback){
+		this._rotateRubiks('y' , direction , index , animate , callback);
 	}
 
-	w.RubiksCubeObject.prototype.rotateZ = function(direction , index , animate){
-		this._rotateRubiks('z' , direction , index , animate);
+	w.RubiksCubeObject.prototype.rotateZ = function(direction , index , animate, callback){
+		this._rotateRubiks('z' , direction , index , animate , callback);
 	}
 
 	/**
@@ -407,13 +408,13 @@
 	 * @param index 沿着该轴某一面的下标 ，非数字即表示旋转整个面
 	 * @param animate 旋转时是否使用动画
 	 */
-	w.RubiksCubeObject.prototype.rotate = function(dimension  , direction , index , animate){
+	w.RubiksCubeObject.prototype.rotate = function(dimension  , direction , index , animate , callback){
 		if(dimension == 'x') {
-			this.rotateX(direction , index , animate);
+			this.rotateX(direction , index , animate , callback);
 		} else if(dimension == 'y') {
-			this.rotateY(direction , index , animate);
+			this.rotateY(direction , index , animate,callback);
 		} else if(dimension == 'z') {
-			this.rotateZ(direction , index , animate);
+			this.rotateZ(direction , index , animate,callback);
 		}
 	}
 
